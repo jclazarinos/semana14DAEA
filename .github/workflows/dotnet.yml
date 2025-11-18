@@ -27,6 +27,4 @@
 	    - name: Publish application
 	      run: dotnet publish --configuration Release --output ./published
 	
-	    - name: Deploy to server (ejemplo de despliegue)
-	      run: |
-	        scp -r ./published username@server:/path/to/deploy35.	
+
