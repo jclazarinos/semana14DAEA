@@ -1,0 +1,6 @@
+@Lab10_Lazarinos_HostAddress = http://localhost:5241
+
+GET {{Lab10_Lazarinos_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

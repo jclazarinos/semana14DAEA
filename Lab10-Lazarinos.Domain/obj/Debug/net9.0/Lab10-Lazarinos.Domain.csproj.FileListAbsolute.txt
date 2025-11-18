@@ -1,0 +1,11 @@
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Domain\bin\Debug\net9.0\Lab10-Lazarinos.Domain.deps.json
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Domain\bin\Debug\net9.0\Lab10-Lazarinos.Domain.dll
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Domain\bin\Debug\net9.0\Lab10-Lazarinos.Domain.pdb
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Domain\obj\Debug\net9.0\Lab10-Lazarinos.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Domain\obj\Debug\net9.0\Lab10-Lazarinos.Domain.AssemblyInfoInputs.cache
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Domain\obj\Debug\net9.0\Lab10-Lazarinos.Domain.AssemblyInfo.cs
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Domain\obj\Debug\net9.0\Lab10-Lazarinos.Domain.csproj.CoreCompileInputs.cache
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Domain\obj\Debug\net9.0\Lab10-Lazarinos.Domain.dll
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Domain\obj\Debug\net9.0\refint\Lab10-Lazarinos.Domain.dll
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Domain\obj\Debug\net9.0\Lab10-Lazarinos.Domain.pdb
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Domain\obj\Debug\net9.0\ref\Lab10-Lazarinos.Domain.dll

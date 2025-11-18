@@ -1,0 +1,15 @@
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\bin\Release\net9.0\Lab10-Lazarinos.Application.deps.json
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\bin\Release\net9.0\Lab10-Lazarinos.Application.dll
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\bin\Release\net9.0\Lab10-Lazarinos.Application.pdb
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\bin\Release\net9.0\Lab10-Lazarinos.Domain.dll
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\bin\Release\net9.0\Lab10-Lazarinos.Domain.pdb
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\obj\Release\net9.0\Lab10-Lazarinos.Application.csproj.AssemblyReference.cache
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\obj\Release\net9.0\Lab10-Lazarinos.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\obj\Release\net9.0\Lab10-Lazarinos.Application.AssemblyInfoInputs.cache
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\obj\Release\net9.0\Lab10-Lazarinos.Application.AssemblyInfo.cs
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\obj\Release\net9.0\Lab10-Lazarinos.Application.csproj.CoreCompileInputs.cache
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\obj\Release\net9.0\Lab10-La.34D2F435.Up2Date
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\obj\Release\net9.0\Lab10-Lazarinos.Application.dll
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\obj\Release\net9.0\refint\Lab10-Lazarinos.Application.dll
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\obj\Release\net9.0\Lab10-Lazarinos.Application.pdb
+C:\MET\semana10\Lab10-Lazarinos\Lab10-Lazarinos.Application\obj\Release\net9.0\ref\Lab10-Lazarinos.Application.dll
