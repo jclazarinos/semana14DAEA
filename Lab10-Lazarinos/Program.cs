@@ -20,38 +20,48 @@ builder.Services.AddOpenApi();
 
 // ========== MODIFICADO PARA RENDER ==========
 // Configurar Hangfire con PostgreSQL Storage
-// Ahora lee desde variables de entorno o appsettings
+// IMPORTANTE: En producción (Render), usar SOLO variables de entorno
 
-// Intentar múltiples fuentes
-var connectionString = 
-    builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? builder.Configuration["DATABASE_URL"]
-    ?? Environment.GetEnvironmentVariable("DATABASE_URL")
-    ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+string? connectionString = null;
+
+// En producción, SOLO usar variables de entorno
+if (builder.Environment.IsProduction())
+{
+    // Render usa DATABASE_URL
+    connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+        ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+    
+    Console.WriteLine("🌐 PRODUCTION MODE: Using environment variables only");
+}
+else
+{
+    // En desarrollo, usar appsettings.json
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    Console.WriteLine("💻 DEVELOPMENT MODE: Using appsettings.json");
+}
 
 // DEBUG: Log detallado para identificar el problema
-var logFile = "/tmp/startup-debug.log";
 try 
 {
     var debugInfo = $@"
 === RENDER STARTUP DEBUG ===
 Timestamp: {DateTime.UtcNow}
+Environment: {builder.Environment.EnvironmentName}
 ConnectionString found: {!string.IsNullOrEmpty(connectionString)}
 ConnectionString length: {connectionString?.Length ?? 0}
-ConnectionString (first 50 chars): {connectionString?.Substring(0, Math.Min(50, connectionString?.Length ?? 0))}
+ConnectionString FULL: {connectionString ?? "NULL"}
 
 Environment Variables:
-- DATABASE_URL: {Environment.GetEnvironmentVariable("DATABASE_URL")?.Substring(0, Math.Min(50, Environment.GetEnvironmentVariable("DATABASE_URL")?.Length ?? 0)) ?? "NOT SET"}
-- ConnectionStrings__DefaultConnection: {Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")?.Substring(0, Math.Min(50, Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")?.Length ?? 0)) ?? "NOT SET"}
+- DATABASE_URL: {Environment.GetEnvironmentVariable("DATABASE_URL") ?? "NOT SET"}
+- ConnectionStrings__DefaultConnection: {Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") ?? "NOT SET"}
+- ASPNETCORE_ENVIRONMENT: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "NOT SET"}
 
-Configuration:
-- GetConnectionString('DefaultConnection'): {builder.Configuration.GetConnectionString("DefaultConnection")?.Substring(0, Math.Min(50, builder.Configuration.GetConnectionString("DefaultConnection")?.Length ?? 0)) ?? "NOT SET"}
-- DATABASE_URL from config: {builder.Configuration["DATABASE_URL"]?.Substring(0, Math.Min(50, builder.Configuration["DATABASE_URL"]?.Length ?? 0)) ?? "NOT SET"}
+Configuration (appsettings):
+- GetConnectionString('DefaultConnection'): {builder.Configuration.GetConnectionString("DefaultConnection") ?? "NOT SET"}
 ===========================
 ";
     
     Console.WriteLine(debugInfo);
-    File.WriteAllText(logFile, debugInfo);
 }
 catch (Exception ex)
 {
@@ -63,14 +73,6 @@ if (string.IsNullOrWhiteSpace(connectionString))
     var errorMsg = @"
 ❌ ERROR: Database connection string not found!
 Please configure the DATABASE_URL environment variable in Render.
-
-Steps to fix:
-1. Go to your Web Service in Render Dashboard
-2. Click 'Environment' in the sidebar
-3. Add environment variable:
-   - Key: DATABASE_URL
-   - Value: Your PostgreSQL Internal Connection String
-4. Save and redeploy
 ";
     Console.WriteLine(errorMsg);
     throw new InvalidOperationException(errorMsg);
