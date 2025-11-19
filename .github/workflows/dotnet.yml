@@ -1,27 +1,37 @@
-	name: Build and Deploy .NET Application
-	
-	on:
-	  push:
-	    branches:
-	      - main # Automáticamente se ejecuta cuando se suben cambios a la rama principal
-	
-	jobs:
-	  build:
-	    runs-on: ubuntu-latest
-	    
-	    steps:
-	    - name: Check out code
-	      uses: actions/checkout@v2
-	
-	    - name: Set up .NET
-	      uses: actions/setup-dotnet@v1
-	      with:
-	        dotnet-version: '8.0'
+name: .NET CI Build and Test
 
-	    - name: Restore dependencies
-	      run: dotnet restore
-	
-	    - name: Build application
-	      run: dotnet build --configuration Release
-	
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup .NET 9
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Test
+      run: dotnet test --no-build --verbosity normal --configuration Release
+      continue-on-error: true
+    
+    - name: Verify Docker build (opcional)
+      run: |
+        docker build -t test-build .
+        echo "✅ Docker build successful"
+
+# Render se encargará automáticamente del deploy
