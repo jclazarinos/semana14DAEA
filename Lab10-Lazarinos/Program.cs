@@ -27,9 +27,15 @@ string? connectionString = null;
 // En producción, SOLO usar variables de entorno
 if (builder.Environment.IsProduction())
 {
-    // Render usa DATABASE_URL
-    connectionString = Environment.GetEnvironmentVariable("DATABASE_URL")
+    // Render usa DATABASE_URL en formato postgresql://
+    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL")
         ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+    
+    if (!string.IsNullOrEmpty(databaseUrl))
+    {
+        // Convertir de postgresql:// a formato Npgsql
+        connectionString = ConvertRenderConnectionString(databaseUrl);
+    }
     
     Console.WriteLine("🌐 PRODUCTION MODE: Using environment variables only");
 }
@@ -40,7 +46,7 @@ else
     Console.WriteLine("💻 DEVELOPMENT MODE: Using appsettings.json");
 }
 
-// DEBUG: Log detallado para identificar el problema
+// DEBUG: Log detallado
 try 
 {
     var debugInfo = $@"
@@ -48,16 +54,7 @@ try
 Timestamp: {DateTime.UtcNow}
 Environment: {builder.Environment.EnvironmentName}
 ConnectionString found: {!string.IsNullOrEmpty(connectionString)}
-ConnectionString length: {connectionString?.Length ?? 0}
-ConnectionString FULL: {connectionString ?? "NULL"}
-
-Environment Variables:
-- DATABASE_URL: {Environment.GetEnvironmentVariable("DATABASE_URL") ?? "NOT SET"}
-- ConnectionStrings__DefaultConnection: {Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") ?? "NOT SET"}
-- ASPNETCORE_ENVIRONMENT: {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "NOT SET"}
-
-Configuration (appsettings):
-- GetConnectionString('DefaultConnection'): {builder.Configuration.GetConnectionString("DefaultConnection") ?? "NOT SET"}
+ConnectionString CONVERTED: {connectionString ?? "NULL"}
 ===========================
 ";
     
@@ -70,16 +67,33 @@ catch (Exception ex)
 
 if (string.IsNullOrWhiteSpace(connectionString))
 {
-    var errorMsg = @"
-❌ ERROR: Database connection string not found!
-Please configure the DATABASE_URL environment variable in Render.
-";
-    Console.WriteLine(errorMsg);
-    throw new InvalidOperationException(errorMsg);
+    throw new InvalidOperationException("Database connection string not found!");
 }
 
 builder.Services.AddHangfire(config =>
     config.UsePostgreSqlStorage(connectionString));
+
+// Función helper para convertir connection string de Render
+static string ConvertRenderConnectionString(string databaseUrl)
+{
+    try
+    {
+        var uri = new Uri(databaseUrl);
+        
+        var host = uri.Host;
+        var port = uri.Port > 0 ? uri.Port : 5432;
+        var database = uri.LocalPath.TrimStart('/');
+        var username = uri.UserInfo.Split(':')[0];
+        var password = uri.UserInfo.Split(':')[1];
+        
+        return $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ Error converting connection string: {ex.Message}");
+        throw;
+    }
+}
 // ============================================
 
 builder.Services.AddHangfireServer();
