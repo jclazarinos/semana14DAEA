@@ -1,3 +1,9 @@
+databases:
+  - name: semana14-db
+    databaseName: hangfire_db
+    user: hangfire_user
+    plan: free
+
 services:
   - type: web
     name: semana14-daea-api
@@ -7,6 +13,10 @@ services:
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: semana14-db
+          property: connectionString
     plan: free
     autoDeploy: true
     healthCheckPath: /health
