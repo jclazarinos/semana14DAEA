@@ -15,7 +15,7 @@ services:
         value: Production
       - key: ConnectionStrings__DefaultConnection
         fromDatabase:
-          name: semana14-db
+          name: semana14db
           property: connectionString
     plan: free
     autoDeploy: true
