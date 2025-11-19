@@ -21,10 +21,60 @@ builder.Services.AddOpenApi();
 // ========== MODIFICADO PARA RENDER ==========
 // Configurar Hangfire con PostgreSQL Storage
 // Ahora lee desde variables de entorno o appsettings
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+
+// Intentar múltiples fuentes
+var connectionString = 
+    builder.Configuration.GetConnectionString("DefaultConnection") 
+    ?? builder.Configuration["DATABASE_URL"]
     ?? Environment.GetEnvironmentVariable("DATABASE_URL")
-    ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
-    ?? throw new InvalidOperationException("Database connection string not found");
+    ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+// DEBUG: Log detallado para identificar el problema
+var logFile = "/tmp/startup-debug.log";
+try 
+{
+    var debugInfo = $@"
+=== RENDER STARTUP DEBUG ===
+Timestamp: {DateTime.UtcNow}
+ConnectionString found: {!string.IsNullOrEmpty(connectionString)}
+ConnectionString length: {connectionString?.Length ?? 0}
+ConnectionString (first 50 chars): {connectionString?.Substring(0, Math.Min(50, connectionString?.Length ?? 0))}
+
+Environment Variables:
+- DATABASE_URL: {Environment.GetEnvironmentVariable("DATABASE_URL")?.Substring(0, Math.Min(50, Environment.GetEnvironmentVariable("DATABASE_URL")?.Length ?? 0)) ?? "NOT SET"}
+- ConnectionStrings__DefaultConnection: {Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")?.Substring(0, Math.Min(50, Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")?.Length ?? 0)) ?? "NOT SET"}
+
+Configuration:
+- GetConnectionString('DefaultConnection'): {builder.Configuration.GetConnectionString("DefaultConnection")?.Substring(0, Math.Min(50, builder.Configuration.GetConnectionString("DefaultConnection")?.Length ?? 0)) ?? "NOT SET"}
+- DATABASE_URL from config: {builder.Configuration["DATABASE_URL"]?.Substring(0, Math.Min(50, builder.Configuration["DATABASE_URL"]?.Length ?? 0)) ?? "NOT SET"}
+===========================
+";
+    
+    Console.WriteLine(debugInfo);
+    File.WriteAllText(logFile, debugInfo);
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Debug logging failed: {ex.Message}");
+}
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    var errorMsg = @"
+❌ ERROR: Database connection string not found!
+Please configure the DATABASE_URL environment variable in Render.
+
+Steps to fix:
+1. Go to your Web Service in Render Dashboard
+2. Click 'Environment' in the sidebar
+3. Add environment variable:
+   - Key: DATABASE_URL
+   - Value: Your PostgreSQL Internal Connection String
+4. Save and redeploy
+";
+    Console.WriteLine(errorMsg);
+    throw new InvalidOperationException(errorMsg);
+}
 
 builder.Services.AddHangfire(config =>
     config.UsePostgreSqlStorage(connectionString));
