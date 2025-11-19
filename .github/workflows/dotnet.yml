@@ -1,50 +1,29 @@
-name: Build and Deploy .NET 9 Application
+	name: Build and Deploy .NET Application
+	
+	on:
+	  push:
+	    branches:
+	      - main # Automáticamente se ejecuta cuando se suben cambios a la rama principal
+	
+	jobs:
+	  build:
+	    runs-on: ubuntu-latest
+	    
+	    steps:
+	    - name: Check out code
+	      uses: actions/checkout@v2
+	
+	    - name: Set up .NET
+	      uses: actions/setup-dotnet@v1
+	      with:
+	        dotnet-version: '8.0'
 
-on:
-  push:
-    branches:
-      - main # Se ejecuta automáticamente cuando se suben cambios a la rama principal
+	    - name: Restore dependencies
+	      run: dotnet restore
+	
+	    - name: Build application
+	      run: dotnet build --configuration Release
+	
+	    - name: Publish application
+	      run: dotnet publish --configuration Release --output ./published
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      # Se usa v4, más actual y segura que v2.
-      uses: actions/checkout@v4
-
-    - name: Set up .NET 9.0
-      # Se usa v4, más actual que v1, y se apunta a .NET 9.0.x
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x' 
-
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Build application
-      run: dotnet build --configuration Release --no-restore
-
-    - name: Publish application
-      run: dotnet publish --configuration Release --output ./published
-
-    - name: Deploy via Secure SSH
-      # El paso scp directo (línea 31-32 original) NO FUNCIONA por falta de credenciales.
-      # Se utiliza una Action de terceros para inyectar credenciales SSH de forma segura (Secrets).
-      # Necesitas crear los Secrets SSH_HOST, SSH_USERNAME, y SSH_PRIVATE_KEY en GitHub.
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        # Copia los archivos publicados al servidor y ejecuta comandos de reinicio.
-        source: "./published/*" 
-        target: "/path/to/deploy/temp_dir" # Directorio temporal en el servidor
-        script: |
-          # 1. Mueve y reemplaza los archivos
-          sudo rm -rf /path/to/deploy/live/*
-          sudo mv /path/to/deploy/temp_dir/* /path/to/deploy/live/
-          # 2. Reinicia el servicio (Asegúrate de cambiar 'mi-servicio-dotnet')
-          # sudo systemctl restart mi-servicio-dotnet
-          echo "Despliegue de .NET 9 completado y servicio reiniciado."
