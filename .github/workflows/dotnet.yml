@@ -24,6 +24,4 @@
 	    - name: Build application
 	      run: dotnet build --configuration Release
 	
-	    - name: Publish application
-	      run: dotnet publish --configuration Release --output ./published
 
