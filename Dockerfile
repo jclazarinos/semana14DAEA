@@ -2,24 +2,27 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copiar archivos de proyecto y restaurar dependencias
-COPY *.csproj ./
+# Copiar la solución y todos los .csproj
+COPY *.sln ./
+COPY **/*.csproj ./
+RUN for file in $(ls *.csproj); do mkdir -p ${file%.*}/ && mv $file ${file%.*}/; done
+
+# Restaurar dependencias
 RUN dotnet restore
 
-# Copiar el resto del código y compilar
+# Copiar todo el código
 COPY . ./
-RUN dotnet publish -c Release -o /app/publish
+
+# Publicar el proyecto principal (ajusta el nombre)
+RUN dotnet publish ./Lab10-Lazarinos/Lab10-Lazarinos.csproj -c Release -o /app/publish
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 
-# Copiar los archivos publicados
 COPY --from=build /app/publish .
 
-# Configurar puerto
-ENV ASPNETCORE_URLS=http://+:$PORT
-EXPOSE $PORT
+ENV ASPNETCORE_URLS=http://+:${PORT}
+EXPOSE ${PORT}
 
-# Comando de inicio (ajusta el nombre del DLL)
 ENTRYPOINT ["dotnet", "Lab10-Lazarinos.dll"]
